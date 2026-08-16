@@ -1,0 +1,10 @@
+{
+  "name":"منصة مفتش المادة",
+  "short_name":"المفتش",
+  "start_url":"./",
+  "display":"standalone",
+  "dir":"rtl",
+  "lang":"ar",
+  "background_color":"#f3f6fa",
+  "theme_color":"#0f172a"
+}
