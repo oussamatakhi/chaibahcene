@@ -1,6 +1,7 @@
 const sb = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_PUBLISHABLE_KEY);
 const $ = id => document.getElementById(id);
 let cache = {teachers:[], institutions:[], visits:[], seminars:[], dispatches:[]};
+let authSubscription = null;
 
 function openModal(id){ const el=$(id); if(el) el.hidden=false; }
 function closeModal(id){ const el=$(id); if(el) el.hidden=true; }
@@ -19,26 +20,54 @@ function showLoginError(message){
   box.style.borderRadius=message?'8px':'0';
 }
 
+function showLogin(){
+  $('loginView').hidden=false;
+  $('dashboardView').hidden=true;
+}
+
+function showApp(){
+  $('loginView').hidden=true;
+  $('dashboardView').hidden=false;
+  loadAll();
+}
+
 async function init(){
   try{
     if(!window.SUPABASE_URL || !window.SUPABASE_PUBLISHABLE_KEY || window.SUPABASE_PUBLISHABLE_KEY.includes('ضع_')){
       showLoginError('إعدادات الاتصال بقاعدة البيانات غير مكتملة.');
       return;
     }
-    const {data,error}=await sb.auth.getSession();
-    if(error){ showLoginError('تعذر الاتصال بخدمة تسجيل الدخول: '+error.message); return; }
-    if(data?.session) showApp(); else showLogin();
-    sb.auth.onAuthStateChange((_event,session)=>{
-      if(session) showApp(); else showLogin();
+
+    // Register the auth listener once. Only explicit sign-in/sign-out events
+    // are allowed to change the visible application state.
+    const listener = sb.auth.onAuthStateChange((event, session)=>{
+      console.log('Auth event:', event, !!session);
+      if(event === 'SIGNED_IN' && session){
+        showApp();
+      } else if(event === 'SIGNED_OUT'){
+        showLogin();
+      }
     });
+    authSubscription = listener?.data?.subscription || null;
+
+    const {data,error}=await sb.auth.getSession();
+    if(error){
+      console.error('getSession error:', error);
+      showLoginError('تعذر الاتصال بخدمة تسجيل الدخول: '+error.message);
+      return;
+    }
+
+    if(data?.session){
+      console.log('Existing session detected. Opening dashboard.');
+      showApp();
+    } else {
+      showLogin();
+    }
   }catch(err){
-    console.error(err);
+    console.error('Initialization error:',err);
     showLoginError('حدث خطأ في تشغيل المنصة: '+(err.message||err));
   }
 }
-
-function showLogin(){$('loginView').hidden=false;$('dashboardView').hidden=true}
-function showApp(){$('loginView').hidden=true;$('dashboardView').hidden=false;loadAll()}
 
 $('loginForm').addEventListener('submit',async e=>{
   e.preventDefault();
@@ -62,16 +91,17 @@ $('loginForm').addEventListener('submit',async e=>{
     if(error){
       let msg=error.message || 'بيانات الدخول غير صحيحة.';
       if(/invalid login credentials/i.test(msg)) msg='البريد الإلكتروني أو كلمة المرور غير صحيحة.';
-      if(/email not confirmed/i.test(msg)) msg='الحساب موجود، لكن البريد الإلكتروني غير مؤكد. فعّل تأكيد البريد من Supabase أو أنشئ المستخدم مع Auto Confirm.';
+      if(/email not confirmed/i.test(msg)) msg='الحساب موجود، لكن البريد الإلكتروني غير مؤكد.';
       showLoginError(msg);
       return;
     }
 
     if(!data?.session){
-      showLoginError('تمت معالجة الطلب ولكن لم يتم إنشاء جلسة دخول. تأكد من أن مستخدم المفتش موجود ومؤكد في Supabase.');
+      showLoginError('تم تسجيل الدخول دون إنشاء جلسة. أعد المحاولة أو تحقق من إعدادات المصادقة.');
       return;
     }
 
+    console.log('Login successful. Showing dashboard now.');
     showLoginError('');
     showApp();
   }catch(err){
@@ -82,7 +112,10 @@ $('loginForm').addEventListener('submit',async e=>{
   }
 });
 
-$('logoutBtn').onclick=()=>sb.auth.signOut();
+$('logoutBtn').onclick=async()=>{
+  const {error}=await sb.auth.signOut();
+  if(error) showLoginError('تعذر تسجيل الخروج: '+error.message);
+};
 
 document.querySelectorAll('.nav').forEach(b=>b.onclick=()=>{
  document.querySelectorAll('.nav').forEach(x=>x.classList.remove('active'));b.classList.add('active');
@@ -106,7 +139,7 @@ async function loadAll(){
   $('countVisits').textContent=cache.visits.length;
   $('countSeminars').textContent=cache.seminars.length;
   renderTeachers();renderInstitutions();renderVisits();renderSeminars();renderDispatches();fillSelects();renderUpcoming();
- }catch(err){console.error(err);alert('تعذر تحميل بيانات المنصة: '+(err.message||err));}
+ }catch(err){console.error('loadAll error:',err);}
 }
 
 function renderTeachers(){
@@ -115,8 +148,8 @@ function renderTeachers(){
  $('teachersTable').innerHTML=`<table><thead><tr><th>الأستاذ</th><th>المؤسسة</th><th>الرتبة</th><th>الدرجة</th><th>آخر تفتيش</th></tr></thead><tbody>${rows.map(x=>`<tr><td>${esc(x.last_name+' '+x.first_name)}</td><td>${esc(x.institutions?.name||'—')}</td><td>${esc(x.rank||'—')}</td><td>${esc(x.grade||'—')}</td><td>${fmtDate(x.last_inspection_date)}</td></tr>`).join('')}</tbody></table>`;
 }
 function renderInstitutions(){$('institutionsTable').innerHTML=`<table><thead><tr><th>المؤسسة</th><th>البلدية</th><th>المدير</th><th>الهاتف</th></tr></thead><tbody>${cache.institutions.map(x=>`<tr><td>${esc(x.name)}</td><td>${esc(x.municipality||'—')}</td><td>${esc(x.director_name||'—')}</td><td>${esc(x.phone||'—')}</td></tr>`).join('')}</tbody></table>`}
-function renderVisits(){$('visitsTable').innerHTML=`<table><thead><tr><th>التاريخ</th><th>الأستاذ</th><th>المؤسسة</th><th>النوع</th><th>الحالة</th></tr></thead><tbody>${cache.visits.map(x=>`<tr><td>${fmtDate(x.scheduled_date)}</td><td>${esc((x.teachers?.last_name||'')+' '+(x.teachers?.first_name||''))}</td><td>${esc(x.institutions?.name||'—')}</td><td>${esc(x.visit_type)}</td><td><span class="badge">${esc(x.status)}</span></td></tr>`).join('')}</tbody></table>`}
-function renderSeminars(){$('seminarsTable').innerHTML=`<table><thead><tr><th>التاريخ</th><th>العنوان</th><th>المكان</th><th>الحالة</th></tr></thead><tbody>${cache.seminars.map(x=>`<tr><td>${fmtDate(x.seminar_date)}</td><td>${esc(x.title)}</td><td>${esc(x.location||'—')}</td><td><span class="badge">${esc(x.status)}</span></td></tr>`).join('')}</tbody></table>`}
+function renderVisits(){$('visitsTable').innerHTML=`<table><thead><tr><th>التاريخ</th><th>الأستاذ</th><th>المؤسسة</th><th>النوع</th><th>الحالة</th></tr></thead><tbody>${cache.visits.map(x=>`<tr><td>${fmtDate(x.scheduled_date)}</td><td>${esc((x.teachers?.last_name||'')+' '+(x.teachers?.first_name||''))}</td><td>${esc(x.institutions?.name||'—')}</td><td>${esc(x.visit_type)}</td><td><span class="badge">${esc(x.status||'مجدولة')}</span></td></tr>`).join('')}</tbody></table>`}
+function renderSeminars(){$('seminarsTable').innerHTML=`<table><thead><tr><th>التاريخ</th><th>العنوان</th><th>المكان</th><th>الحالة</th></tr></thead><tbody>${cache.seminars.map(x=>`<tr><td>${fmtDate(x.seminar_date)}</td><td>${esc(x.title)}</td><td>${esc(x.location||'—')}</td><td><span class="badge">${esc(x.status||'مجدولة')}</span></td></tr>`).join('')}</tbody></table>`}
 function renderDispatches(){$('dispatchesTable').innerHTML=`<table><thead><tr><th>التاريخ</th><th>رقم الإرسال</th><th>الجهة</th><th>الموضوع</th></tr></thead><tbody>${cache.dispatches.map(x=>`<tr><td>${fmtDate(x.dispatch_date)}</td><td>${esc(x.dispatch_number||'—')}</td><td>${esc(x.recipient||'—')}</td><td>${esc(x.subject||'—')}</td></tr>`).join('')}</tbody></table>`}
 function renderUpcoming(){const v=cache.visits.filter(x=>x.scheduled_date>=new Date().toISOString().slice(0,10)).slice(0,6);$('upcomingVisits').innerHTML=v.length?'<ul class="upcoming">'+v.map(x=>`<li><b>${fmtDate(x.scheduled_date)}</b> — ${esc((x.teachers?.last_name||'')+' '+(x.teachers?.first_name||''))} — ${esc(x.institutions?.name||'')}</li>`).join('')+'</ul>':'<div class="empty">لا توجد زيارات قادمة.</div>'}
 function fillSelects(){
@@ -131,4 +164,5 @@ $('visitForm').addEventListener('submit',async e=>{e.preventDefault();const o=fo
 $('seminarForm').addEventListener('submit',async e=>{e.preventDefault();const {error}=await sb.from('seminars').insert(formObj(e.target));if(error)return alert(error.message);closeModal('seminarModal');e.target.reset();loadAll()});
 $('dispatchForm').addEventListener('submit',async e=>{e.preventDefault();const {error}=await sb.from('dispatches').insert(formObj(e.target));if(error)return alert(error.message);closeModal('dispatchModal');e.target.reset();loadAll()});
 $('teacherSearch').addEventListener('input',renderTeachers);
+
 init();
