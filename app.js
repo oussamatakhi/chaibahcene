@@ -4,11 +4,19 @@ let cache = {teachers:[], institutions:[], visits:[], seminars:[], dispatches:[]
 
 function openModal(id){ const el=$(id); if(el) el.hidden=false; }
 function closeModal(id){ const el=$(id); if(el) el.hidden=true; }
-function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function esc(v){return String(v??'').replace(/[&<>\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#039;'}[m]))}
 function fmtDate(v){return v?new Date(v+'T00:00:00').toLocaleDateString('ar-DZ'):'—'}
+
 function showLoginError(message){
   const box=$('loginError');
-  if(box){ box.textContent=message||''; box.style.display=message?'block':'none'; }
+  if(!box) return;
+  box.textContent=message||'';
+  box.style.display=message?'block':'none';
+  box.style.padding=message?'10px 12px':'0';
+  box.style.marginTop=message?'12px':'0';
+  box.style.background=message?'#fef2f2':'transparent';
+  box.style.border=message?'1px solid #fecaca':'0';
+  box.style.borderRadius=message?'8px':'0';
 }
 
 async function init(){
@@ -17,31 +25,63 @@ async function init(){
       showLoginError('إعدادات الاتصال بقاعدة البيانات غير مكتملة.');
       return;
     }
-    const {data:{session},error}=await sb.auth.getSession();
+    const {data,error}=await sb.auth.getSession();
     if(error){ showLoginError('تعذر الاتصال بخدمة تسجيل الدخول: '+error.message); return; }
-    if(session) showApp(); else showLogin();
-    sb.auth.onAuthStateChange((_e,s)=>s?showApp():showLogin());
-  }catch(err){ showLoginError('حدث خطأ في تشغيل المنصة: '+(err.message||err)); }
+    if(data?.session) showApp(); else showLogin();
+    sb.auth.onAuthStateChange((_event,session)=>{
+      if(session) showApp(); else showLogin();
+    });
+  }catch(err){
+    console.error(err);
+    showLoginError('حدث خطأ في تشغيل المنصة: '+(err.message||err));
+  }
 }
+
 function showLogin(){$('loginView').hidden=false;$('dashboardView').hidden=true}
 function showApp(){$('loginView').hidden=true;$('dashboardView').hidden=false;loadAll()}
 
 $('loginForm').addEventListener('submit',async e=>{
   e.preventDefault();
   const btn=e.submitter || e.target.querySelector('button[type="submit"]');
-  if(btn){btn.disabled=true;btn.textContent='جارٍ تسجيل الدخول...';}
+  const email=$('email').value.trim();
+  const password=$('password').value;
   showLoginError('');
+
+  if(!email || !password){
+    showLoginError('أدخل البريد الإلكتروني وكلمة المرور.');
+    return;
+  }
+
+  if(btn){btn.disabled=true;btn.textContent='جارٍ تسجيل الدخول...';}
+
   try{
-    const email=$('email').value.trim();
-    const password=$('password').value;
-    if(!email || !password){showLoginError('أدخل البريد الإلكتروني وكلمة المرور.');return;}
+    console.log('Attempting Supabase login for:',email);
     const {data,error}=await sb.auth.signInWithPassword({email,password});
-    if(error){showLoginError('فشل تسجيل الدخول: '+error.message);return;}
-    if(!data?.session){showLoginError('لم يتم إنشاء جلسة دخول. تحقق من بيانات الحساب.');return;}
+    console.log('Supabase login result:',{data,error});
+
+    if(error){
+      let msg=error.message || 'بيانات الدخول غير صحيحة.';
+      if(/invalid login credentials/i.test(msg)) msg='البريد الإلكتروني أو كلمة المرور غير صحيحة.';
+      if(/email not confirmed/i.test(msg)) msg='الحساب موجود، لكن البريد الإلكتروني غير مؤكد. فعّل تأكيد البريد من Supabase أو أنشئ المستخدم مع Auto Confirm.';
+      showLoginError(msg);
+      return;
+    }
+
+    if(!data?.session){
+      showLoginError('تمت معالجة الطلب ولكن لم يتم إنشاء جلسة دخول. تأكد من أن مستخدم المفتش موجود ومؤكد في Supabase.');
+      return;
+    }
+
+    showLoginError('');
     showApp();
-  }catch(err){showLoginError('تعذر تنفيذ تسجيل الدخول: '+(err.message||err));}
-  finally{if(btn){btn.disabled=false;btn.textContent='تسجيل الدخول';}}
+  }catch(err){
+    console.error('Login exception:',err);
+    showLoginError('تعذر تنفيذ تسجيل الدخول: '+(err.message||err));
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='تسجيل الدخول';}
+  }
 });
+
 $('logoutBtn').onclick=()=>sb.auth.signOut();
 
 document.querySelectorAll('.nav').forEach(b=>b.onclick=()=>{
@@ -61,10 +101,14 @@ async function loadAll(){
   const errors=[t,i,v,s,d].filter(x=>x.error);
   if(errors.length) console.error('Database errors',errors);
   cache={teachers:t.data||[],institutions:i.data||[],visits:v.data||[],seminars:s.data||[],dispatches:d.data||[]};
-  $('countTeachers').textContent=cache.teachers.length;$('countInstitutions').textContent=cache.institutions.length;$('countVisits').textContent=cache.visits.length;$('countSeminars').textContent=cache.seminars.length;
+  $('countTeachers').textContent=cache.teachers.length;
+  $('countInstitutions').textContent=cache.institutions.length;
+  $('countVisits').textContent=cache.visits.length;
+  $('countSeminars').textContent=cache.seminars.length;
   renderTeachers();renderInstitutions();renderVisits();renderSeminars();renderDispatches();fillSelects();renderUpcoming();
  }catch(err){console.error(err);alert('تعذر تحميل بيانات المنصة: '+(err.message||err));}
 }
+
 function renderTeachers(){
  const q=($('teacherSearch')?.value||'').toLowerCase();
  const rows=cache.teachers.filter(x=>(x.first_name+' '+x.last_name+' '+(x.institutions?.name||'')).toLowerCase().includes(q));
