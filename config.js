@@ -2,15 +2,20 @@
 window.SUPABASE_URL = "https://qaimjtdiyatouqsqfthb.supabase.co";
 window.SUPABASE_PUBLISHABLE_KEY = "sb_publishable_t9YsG10SgXDyKPANd6TdCA_UosY7Yzb";
 
-// تحميل التطبيق المستقر ثم إصلاح زر التقرير بعد اكتمال تحميل التطبيق.
+// تشغيل التطبيق المستقر بعد اكتمال ملفات نموذج التقرير، ثم إعادة ربط زر التقرير
+// بالدالة الوزارية الصحيحة مع تزويدها بسياق الزيارة والأستاذ من Supabase.
 (function(){
-  var s=document.createElement('script');
-  s.src='app-fix.js?v=20260817-1';
-  s.defer=true;
-  document.head.appendChild(s);
   window.addEventListener('load', function(){
-    var h=document.createElement('script');
-    h.src='report-hotfix.js?v=20260817-2';
-    document.head.appendChild(h);
+    window.__ministerialOpenReport = window.openReport;
+
+    var app=document.createElement('script');
+    app.src='app-fix.js?v=20260817-3';
+    app.onload=function(){
+      var finalFix=document.createElement('script');
+      finalFix.src='report-final.js?v=20260817-1';
+      document.head.appendChild(finalFix);
+    };
+    app.onerror=function(){console.error('تعذر تحميل التطبيق المستقر app-fix.js');};
+    document.head.appendChild(app);
   });
 })();
