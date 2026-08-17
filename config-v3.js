@@ -43,4 +43,12 @@ window.GOOGLE_DRIVE_CLIENT_ID = "";
   document.querySelectorAll('script[src^="teacher-page-final.js"]').forEach(s=>{s.src='teacher-page-final.js?v=20260818-5'});
  };
  bust();
+ // طبقة إصلاح نهائية بعد اكتمال تحميل جميع ملفات المنصة: تعيد ربط التنقل وتسترجع البيانات حتى لو فشل أحد الملفات الإضافية.
+ window.addEventListener('load',function(){
+  if(document.querySelector('script[data-platform-repair="1"]'))return;
+  const s=document.createElement('script');
+  s.src='app-repair.js?v=20260818-1';
+  s.dataset.platformRepair='1';
+  document.body.appendChild(s);
+ });
 })();
