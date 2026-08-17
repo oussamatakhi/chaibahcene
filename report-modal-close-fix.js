@@ -1,14 +1,12 @@
-/* نافذة التقرير: زر إغلاق سفلي واحد فقط، مع إبقاء زر × العلوي */
+/* إصلاح نافذة التقرير - بدون مراقبة مستمرة للـ DOM */
 (function(){
 'use strict';
 function clean(){
  const modal=document.getElementById('reportModal'); if(!modal)return;
  const card=modal.querySelector('.modal-card'); if(!card)return;
- // احذف زر الإغلاق النصي الصغير داخل شريط إجراءات التقرير، لكن لا تمس زر الإغلاق السفلي.
- [...card.querySelectorAll('button')].forEach(b=>{
+ [...card.querySelectorAll('button')].forEach(function(b){
    const txt=(b.textContent||'').replace(/\s+/g,' ').trim();
-   const isCloseText=txt==='إغلاق النافذة'||txt==='إغلاق';
-   if(isCloseText && !b.classList.contains('mobile-modal-close')) b.remove();
+   if((txt==='إغلاق النافذة'||txt==='إغلاق') && !b.classList.contains('mobile-modal-close')) b.remove();
  });
  const bottoms=[...card.querySelectorAll('.mobile-modal-close')];
  bottoms.slice(1).forEach(b=>b.remove());
@@ -19,6 +17,5 @@ function clean(){
    card.appendChild(b);
  }
 }
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',clean);else clean();
-new MutationObserver(clean).observe(document.body,{childList:true,subtree:true});
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',clean,{once:true});else clean();
 })();
