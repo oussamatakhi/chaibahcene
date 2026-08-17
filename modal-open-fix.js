@@ -9,5 +9,5 @@
   function bind(){document.addEventListener('click',function(e){const close=e.target.closest('.modal .close,.modal .mobile-modal-close');if(close){const modal=close.closest('.modal');if(modal)hide(modal.id);return}if(e.target.classList.contains('modal'))hide(e.target.id)});document.addEventListener('submit',function(e){const f=e.target;if(f&&f.id==='institutionForm'&&f.dataset.editId){e.preventDefault();e.stopImmediatePropagation()}},true)}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
   if(!document.querySelector('script[data-institution-edit-fix]')){const s=document.createElement('script');s.src='institution-edit-fix.js?v=20260817-1';s.dataset.institutionEditFix='1';document.head.appendChild(s)}
-  if(!document.querySelector('script[data-report-delete-fix]')){const s=document.createElement('script');s.src='report-delete-fix.js?v=20260818-1';s.dataset.reportDeleteFix='1';document.head.appendChild(s)}
+  if(!document.querySelector('script[data-report-delete-fix]')){const s=document.createElement('script');s.src='report-delete-fix.js?v=20260818-2';s.dataset.reportDeleteFix='1';document.head.appendChild(s)}
 })();
