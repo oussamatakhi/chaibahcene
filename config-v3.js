@@ -14,6 +14,11 @@ window.SUPABASE_PUBLISHABLE_KEY = "sb_publishable_t9YsG10SgXDyKPANd6TdCA_UosY7Yz
       finalFix.onload=function(){
         var visitFix=document.createElement('script');
         visitFix.src='visit-teacher-search.js?v=20260817-1';
+        visitFix.onload=function(){
+          var autofill=document.createElement('script');
+          autofill.src='report-autofill-v2.js?v=20260817-1';
+          document.head.appendChild(autofill);
+        };
         document.head.appendChild(visitFix);
       };
       document.head.appendChild(finalFix);
