@@ -19,7 +19,12 @@ window.SUPABASE_PUBLISHABLE_KEY = "sb_publishable_t9YsG10SgXDyKPANd6TdCA_UosY7Yz
           autofill.src='report-autofill-v2.js?v=20260817-2';
           autofill.onload=function(){
             var textFix=document.createElement('script');
-            textFix.src='report-text-corrections.js?v=20260817-1';
+            textFix.src='report-text-corrections.js?v=20260817-2';
+            textFix.onload=function(){
+              var finalTextFix=document.createElement('script');
+              finalTextFix.src='report-text-corrections-v2.js?v=20260817-1';
+              document.head.appendChild(finalTextFix);
+            };
             document.head.appendChild(textFix);
           };
           document.head.appendChild(autofill);
