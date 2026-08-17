@@ -4,7 +4,6 @@ window.SUPABASE_PUBLISHABLE_KEY = "sb_publishable_t9YsG10SgXDyKPANd6TdCA_UosY7Yz
 
 (function(){
   window.addEventListener('load', function(){
-    // حفظ معالج التقرير الوزاري قبل تحميل التطبيق المستقر.
     window.__ministerialOpenReport = window.openReport;
 
     var app=document.createElement('script');
@@ -12,6 +11,11 @@ window.SUPABASE_PUBLISHABLE_KEY = "sb_publishable_t9YsG10SgXDyKPANd6TdCA_UosY7Yz
     app.onload=function(){
       var finalFix=document.createElement('script');
       finalFix.src='report-final.js?v=20260817-2';
+      finalFix.onload=function(){
+        var visitFix=document.createElement('script');
+        visitFix.src='visit-teacher-search.js?v=20260817-1';
+        document.head.appendChild(visitFix);
+      };
       document.head.appendChild(finalFix);
     };
     app.onerror=function(){console.error('تعذر تحميل التطبيق المستقر app-fix.js');};
