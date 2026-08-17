@@ -1,0 +1,13 @@
+/* توحيد خط أزرار الواجهة */
+#logoutBtn,
+#reportModal button,
+#reportModal input,
+#reportModal select,
+#reportModal textarea,
+#reportModal .report-actions button,
+.report-entry-card button,
+.report-entry-card input,
+.report-entry-card select,
+.report-entry-card textarea{
+  font-family:'Cairo',Tahoma,Arial,sans-serif !important;
+}
