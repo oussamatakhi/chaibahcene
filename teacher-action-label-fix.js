@@ -1,0 +1,1 @@
+(()=>{'use strict';function fix(){document.querySelectorAll('#teachersTable .actions .small-btn').forEach(b=>{if(b.textContent.trim()==='الملف')b.textContent='سجل'});}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fix);else fix();new MutationObserver(fix).observe(document.body,{childList:true,subtree:true});})();
