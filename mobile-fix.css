@@ -1,4 +1,4 @@
-/* إصلاح عرض الهاتف - الزيارات والتقارير والأساتذة والمؤسسات */
+/* إصلاح عرض الهاتف - الزيارات والتقارير والأساتذة والمؤسسات والندوات والإرساليات */
 @media (max-width:600px){
 html,body{width:100%;max-width:100%;overflow-x:hidden}
 .content{width:100%;max-width:100%;min-width:0;padding:12px}
@@ -23,17 +23,16 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
 #visitsTable td:nth-child(7) .small-btn{width:100%!important;min-width:0!important;margin:0!important;padding:8px 3px!important;font-size:11px!important}
 #visitsTable .badge{justify-self:start}
 
-/* الأساتذة - بطاقات متجاوبة */
-#teachers{width:100%;max-width:100%;overflow:hidden}
-#teachers .panel{width:100%;max-width:100%;padding:12px;overflow:hidden}
-#teachersTable,#teachersTable .table-wrap{width:100%!important;max-width:100%!important;overflow:visible!important}
-#teachersTable table{display:block!important;width:100%!important;table-layout:auto!important;margin-top:10px}
-#teachersTable thead{display:none!important}
-#teachersTable tbody{display:block!important;width:100%!important}
-#teachersTable tr{display:block!important;width:100%!important;margin:0 0 12px!important;padding:10px 11px!important;background:#fff!important;border:1px solid #e2e8f0!important;border-radius:12px!important;box-shadow:0 2px 8px rgba(15,23,42,.04)!important}
-#teachersTable td{display:grid!important;grid-template-columns:92px minmax(0,1fr)!important;align-items:center!important;gap:8px!important;width:100%!important;min-width:0!important;padding:8px 2px!important;border:0!important;border-bottom:1px solid #f1f5f9!important;text-align:right!important;overflow-wrap:anywhere!important;word-break:normal!important}
-#teachersTable td:last-child{display:block!important;border-bottom:0!important;padding-top:10px!important}
-#teachersTable td::before{font-weight:700!important;color:#64748b!important;font-size:11px!important;white-space:nowrap!important}
+#teachers,#institutions,#seminars,#dispatches{width:100%;max-width:100%;overflow:hidden}
+#teachers .panel,#institutions .panel,#seminars .panel,#dispatches .panel{width:100%;max-width:100%;padding:12px;overflow:hidden}
+#teachersTable,#teachersTable .table-wrap,#institutionsTable,#institutionsTable .table-wrap,#seminarsTable,#seminarsTable .table-wrap,#dispatchesTable,#dispatchesTable .table-wrap{width:100%!important;max-width:100%!important;overflow:visible!important;min-width:0!important}
+#teachersTable table,#institutionsTable table,#seminarsTable table,#dispatchesTable table{display:block!important;width:100%!important;max-width:100%!important;margin-top:10px}
+#teachersTable thead,#institutionsTable thead,#seminarsTable thead,#dispatchesTable thead{display:none!important}
+#teachersTable tbody,#institutionsTable tbody,#seminarsTable tbody,#dispatchesTable tbody{display:block!important;width:100%!important}
+#teachersTable tr,#institutionsTable tr,#seminarsTable tr,#dispatchesTable tr{display:block!important;width:100%!important;margin:0 0 12px!important;padding:10px 11px!important;background:#fff!important;border:1px solid #e2e8f0!important;border-radius:12px!important;box-shadow:0 2px 8px rgba(15,23,42,.04)!important}
+#teachersTable td,#institutionsTable td,#seminarsTable td,#dispatchesTable td{display:grid!important;grid-template-columns:105px minmax(0,1fr)!important;align-items:center!important;gap:8px!important;width:100%!important;min-width:0!important;padding:8px 2px!important;border:0!important;border-bottom:1px solid #f1f5f9!important;text-align:right!important;font-size:12px!important;line-height:1.5!important;overflow-wrap:anywhere!important;word-break:normal!important}
+#teachersTable td:last-child,#institutionsTable td:last-child,#seminarsTable td:last-child,#dispatchesTable td:last-child{border-bottom:0!important}
+#teachersTable td::before,#institutionsTable td::before,#seminarsTable td::before,#dispatchesTable td::before{font-weight:700!important;color:#64748b!important;font-size:11px!important;white-space:nowrap!important}
 #teachersTable td:nth-child(1)::before{content:'الأستاذ'}
 #teachersTable td:nth-child(2)::before{content:'رقم الموظف'}
 #teachersTable td:nth-child(3)::before{content:'المؤسسة'}
@@ -43,22 +42,6 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
 #teachersTable td:nth-child(1) .link-btn{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #teachersTable td:nth-child(6) .actions{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px!important;width:100%!important}
 #teachersTable td:nth-child(6) .small-btn{width:100%!important;min-width:0!important;margin:0!important;padding:8px 3px!important;font-size:11px!important}
-#teachersTable .empty{width:100%;box-sizing:border-box}
-#teachers .page-head{gap:10px!important}
-#teachers .page-head>div:last-child{width:100%!important}
-#teachers .page-head>div:last-child button{font-size:11px!important;padding:8px 9px!important}
-
-/* المؤسسات - بطاقات متجاوبة */
-#institutions{width:100%;max-width:100%;overflow:hidden}
-#institutions .panel{width:100%;max-width:100%;padding:12px;overflow:hidden}
-#institutionsTable,#institutionsTable .table-wrap{width:100%!important;max-width:100%!important;overflow:visible!important;min-width:0!important}
-#institutionsTable table{display:block!important;width:100%!important;max-width:100%!important;margin-top:10px!important}
-#institutionsTable thead{display:none!important}
-#institutionsTable tbody{display:block!important;width:100%!important}
-#institutionsTable tr{display:block!important;width:100%!important;margin:0 0 12px!important;padding:10px 11px!important;background:#fff!important;border:1px solid #e2e8f0!important;border-radius:12px!important;box-shadow:0 2px 8px rgba(15,23,42,.04)!important}
-#institutionsTable td{display:grid!important;grid-template-columns:105px minmax(0,1fr)!important;align-items:center!important;gap:8px!important;width:100%!important;min-width:0!important;padding:8px 2px!important;border:0!important;border-bottom:1px solid #f1f5f9!important;text-align:right!important;font-size:12px!important;line-height:1.5!important;overflow-wrap:anywhere!important;word-break:normal!important}
-#institutionsTable td:last-child{border-bottom:0!important}
-#institutionsTable td::before{font-weight:700!important;color:#64748b!important;font-size:11px!important;white-space:nowrap!important}
 #institutionsTable td:nth-child(1)::before{content:'المؤسسة'}
 #institutionsTable td:nth-child(2)::before{content:'النوع'}
 #institutionsTable td:nth-child(3)::before{content:'المقاطعة الإدارية'}
@@ -66,6 +49,24 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
 #institutionsTable td:nth-child(5)::before{content:'المدير'}
 #institutionsTable td:nth-child(6)::before{content:'الهاتف'}
 #institutionsTable td:nth-child(1){font-weight:700!important;font-size:13px!important}
+
+/* الندوات */
+#seminarsTable td:nth-child(1)::before{content:'التاريخ'}
+#seminarsTable td:nth-child(2)::before{content:'العنوان'}
+#seminarsTable td:nth-child(3)::before{content:'المكان'}
+#seminarsTable td:nth-child(4)::before{content:'الحالة'}
+#seminarsTable td:nth-child(1){font-weight:700!important}
+
+/* جداول الإرسال */
+#dispatchesTable td:nth-child(1)::before{content:'التاريخ'}
+#dispatchesTable td:nth-child(2)::before{content:'رقم الإرسال'}
+#dispatchesTable td:nth-child(3)::before{content:'الجهة'}
+#dispatchesTable td:nth-child(4)::before{content:'الموضوع'}
+#dispatchesTable td:nth-child(2){font-weight:700!important}
+
+#teachers .page-head,#institutions .page-head,#seminars .page-head,#dispatches .page-head{gap:10px!important;flex-wrap:wrap!important}
+#teachers .page-head>div:last-child,#institutions .page-head>div:last-child,#seminars .page-head>div:last-child,#dispatches .page-head>div:last-child{width:100%!important}
+#teachers .page-head>div:last-child button,#institutions .page-head>div:last-child button,#seminars .page-head>div:last-child button,#dispatches .page-head>div:last-child button{font-size:11px!important;padding:8px 9px!important}
 
 /* التقرير */
 #reportModal{padding:5px!important;align-items:stretch!important}
