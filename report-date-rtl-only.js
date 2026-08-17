@@ -1,0 +1,7 @@
+(()=>{'use strict';
+// اتجاه RTL للتقرير المطبوع فقط. لا نعدل حقول إدخال التاريخ داخل النظام.
+const ISO=/^(\d{4})-(\d{2})-(\d{2})$/;
+function formatDate(v){const s=String(v??'').trim();const m=s.match(ISO);return m?`${m[3]}-${m[2]}-${m[1]}`:s}
+function applyReportRTL(doc){if(!doc?.body)return;doc.documentElement.dir='rtl';doc.body.dir='rtl';doc.body.style.direction='rtl';doc.querySelectorAll('[data-date],[data-field-date],.date-value,.report-date').forEach(el=>{el.dir='rtl';el.style.direction='rtl';el.style.textAlign='right';if(ISO.test(el.textContent.trim()))el.textContent=formatDate(el.textContent)});doc.querySelectorAll('input[type="date"]').forEach(el=>{el.dir='rtl';el.style.direction='rtl';el.style.textAlign='right'});}
+function hook(){const base=window.printMinisterialReport;if(typeof base==='function'&&!base.__reportDateRTLOnly){const wrapped=function(...args){const realOpen=window.open;window.open=function(...openArgs){const w=realOpen.apply(window,openArgs);[100,500,1000].forEach(t=>setTimeout(()=>applyReportRTL(w?.document),t));return w};try{return base.apply(this,args)}finally{setTimeout(()=>{window.open=realOpen},80)}};wrapped.__reportDateRTLOnly=true;window.printMinisterialReport=wrapped}}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',hook);else hook();})();
