@@ -7,19 +7,19 @@ window.SUPABASE_PUBLISHABLE_KEY = "sb_publishable_t9YsG10SgXDyKPANd6TdCA_UosY7Yz
     window.__ministerialOpenReport = window.openReport;
 
     var app=document.createElement('script');
-    app.src='app-fix.js?v=20260817-4';
+    app.src='app-fix.js?v=20260817-5';
     app.onload=function(){
       var finalFix=document.createElement('script');
-      finalFix.src='report-final.js?v=20260817-2';
+      finalFix.src='report-final.js?v=20260817-3';
       finalFix.onload=function(){
         var visitFix=document.createElement('script');
-        visitFix.src='visit-teacher-search.js?v=20260817-1';
+        visitFix.src='visit-teacher-search.js?v=20260817-2';
         visitFix.onload=function(){
           var autofill=document.createElement('script');
-          autofill.src='report-autofill-v2.js?v=20260817-1';
+          autofill.src='report-autofill-v2.js?v=20260817-2';
           autofill.onload=function(){
             var textFix=document.createElement('script');
-            textFix.src='report-source-text-fix.js?v=20260817-1';
+            textFix.src='report-text-corrections.js?v=20260817-1';
             document.head.appendChild(textFix);
           };
           document.head.appendChild(autofill);
