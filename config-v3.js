@@ -17,6 +17,11 @@ window.SUPABASE_PUBLISHABLE_KEY = "sb_publishable_t9YsG10SgXDyKPANd6TdCA_UosY7Yz
         visitFix.onload=function(){
           var autofill=document.createElement('script');
           autofill.src='report-autofill-v2.js?v=20260817-1';
+          autofill.onload=function(){
+            var textFix=document.createElement('script');
+            textFix.src='report-source-text-fix.js?v=20260817-1';
+            document.head.appendChild(textFix);
+          };
           document.head.appendChild(autofill);
         };
         document.head.appendChild(visitFix);
