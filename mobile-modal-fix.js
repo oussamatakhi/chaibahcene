@@ -16,7 +16,11 @@
         card.appendChild(btn);
       }
     });
+    document.querySelectorAll('#teachersTable .actions .small-btn').forEach(function(btn){
+      if(btn.textContent.trim()==='الملف') btn.textContent='سجل';
+    });
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',setup,{once:true});
   else setup();
+  new MutationObserver(setup).observe(document.body,{childList:true,subtree:true});
 })();
