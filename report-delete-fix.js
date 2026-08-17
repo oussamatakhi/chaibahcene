@@ -1,35 +1,7 @@
 (()=>{'use strict';
 const getClient=()=>window.sb||window.supabaseClient||window.__APP_SUPABASE_CLIENT;
-function bindDelete(){
- const form=document.getElementById('ministerialReportForm');
- if(!form||form.dataset.deleteBound==='1')return;
- form.dataset.deleteBound='1';
- const actions=form.querySelector('.report-actions');
- if(!actions)return;
- const btn=document.createElement('button');
- btn.type='button'; btn.id='rtDeleteBtn'; btn.className='small-btn danger'; btn.textContent='حذف التقرير';
- btn.style.marginInlineStart='8px';
- actions.appendChild(btn);
- btn.addEventListener('click',async()=>{
-   const id=form.elements.id?.value?.trim();
-   if(!id){alert('لا يوجد تقرير محفوظ لحذفه.');return;}
-   if(!confirm('هل أنت متأكد من حذف هذا التقرير؟\nسيتم حذف التقرير فقط ولن يتم حذف الزيارة أو الأستاذ.'))return;
-   const sb=getClient(); if(!sb){alert('تعذر الاتصال بقاعدة البيانات.');return;}
-   btn.disabled=true;btn.textContent='جارٍ الحذف...';
-   try{
-     const {error}=await sb.from('visit_reports').delete().eq('id',id);
-     if(error){alert('تعذر حذف التقرير: '+error.message);return;}
-     const visitId=form.elements.visit_id?.value?.trim();
-     if(visitId){
-       await sb.from('visits').update({status:'مجدولة'}).eq('id',visitId);
-     }
-     window.closeModal?.('reportModal');
-     if(typeof window.loadAll==='function')await window.loadAll();
-     alert('تم حذف التقرير بنجاح.');
-   }finally{btn.disabled=false;btn.textContent='حذف التقرير';}
- });
-}
-const observer=new MutationObserver(()=>bindDelete());
-function init(){bindDelete();observer.observe(document.body,{childList:true,subtree:true});}
-document.readyState==='loading'?document.addEventListener('DOMContentLoaded',init):init();
-})();
+async function deleteReport(id,visitId,btn){if(!id){alert('لا يوجد تقرير محفوظ لحذفه.');return}if(!confirm('هل أنت متأكد من حذف هذا التقرير؟\nسيتم حذف التقرير فقط ولن يتم حذف الزيارة أو الأستاذ.'))return;const sb=getClient();if(!sb){alert('تعذر الاتصال بقاعدة البيانات.');return}btn.disabled=true;const old=btn.textContent;btn.textContent='جارٍ الحذف...';try{const{error}=await sb.from('visit_reports').delete().eq('id',id);if(error){alert('تعذر حذف التقرير: '+error.message);return}if(visitId)await sb.from('visits').update({status:'مجدولة'}).eq('id',visitId);window.closeModal?.('reportModal');if(typeof window.loadAll==='function')await window.loadAll();alert('تم حذف التقرير بنجاح.')}finally{btn.disabled=false;btn.textContent=old}}
+function bindModalDelete(){const form=document.getElementById('ministerialReportForm');if(!form||form.dataset.deleteBound==='1')return;form.dataset.deleteBound='1';const actions=form.querySelector('.report-actions');if(!actions)return;const btn=document.createElement('button');btn.type='button';btn.id='rtDeleteBtn';btn.className='small-btn danger';btn.textContent='حذف التقرير';btn.style.marginInlineStart='8px';actions.appendChild(btn);btn.onclick=()=>deleteReport(form.elements.id?.value?.trim(),form.elements.visit_id?.value?.trim(),btn)}
+function removeSmallClose(){const m=document.getElementById('reportModal');if(m)m.querySelectorAll('.modal-card>.close').forEach(b=>b.remove())}
+async function bindListDelete(){const table=document.getElementById('visitsTable'),sb=getClient();if(!table||!sb)return;for(const row of [...table.querySelectorAll('tbody tr')]){if(row.querySelector('.delete-report-btn'))continue;const rb=[...row.querySelectorAll('button')].find(b=>b.textContent.trim()==='التقرير');if(!rb)continue;const match=(rb.getAttribute('onclick')||'').match(/openReport\(['\"]([^'\"]+)/);if(!match)continue;const visitId=match[1];const{data}=await sb.from('visit_reports').select('id').eq('visit_id',visitId).maybeSingle();if(!data)continue;const wrap=row.querySelector('.actions')||rb.parentElement,btn=document.createElement('button');btn.type='button';btn.className='small-btn danger delete-report-btn';btn.textContent='حذف التقرير';wrap.appendChild(btn);btn.onclick=()=>deleteReport(data.id,visitId,btn)}}
+function run(){bindModalDelete();removeSmallClose();bindListDelete()}const observer=new MutationObserver(run);function init(){run();observer.observe(document.body,{childList:true,subtree:true})}document.readyState==='loading'?document.addEventListener('DOMContentLoaded',init):init()})();
