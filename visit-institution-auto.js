@@ -1,0 +1,6 @@
+(()=>{'use strict';
+const $=id=>document.getElementById(id);
+function applyVisitInstitution(){const teacher=$('visitTeacher'), institution=$('visitInstitution');if(!teacher||!institution)return;const id=teacher.value;const t=(window.cache?.teachers||[]).find(x=>String(x.id)===String(id));institution.innerHTML='';if(!t){institution.innerHTML='<option value="">— اختر الأستاذ أولاً —</option>';institution.disabled=true;return}const name=t.institutions?.name||'—';const option=document.createElement('option');option.value=t.institution_id||'';option.textContent=name;option.selected=true;institution.appendChild(option);institution.disabled=true;}
+function bind(){const t=$('visitTeacher');if(!t||t.dataset.autoInstitutionBound)return;t.dataset.autoInstitutionBound='1';t.addEventListener('change',applyVisitInstitution);applyVisitInstitution();}
+window.applyVisitInstitution=applyVisitInstitution;window.bindVisitInstitutionAuto=bind;document.addEventListener('DOMContentLoaded',bind);setTimeout(bind,300);
+})();
