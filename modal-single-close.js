@@ -1,0 +1,8 @@
+(()=>{'use strict';
+function addSingleCloseButton(modal){const card=modal.querySelector('.modal-card');if(!card)return;if(card.querySelector('[data-single-modal-close="true"]'))return;const button=document.createElement('button');button.type='button';button.textContent='إغلاق';button.setAttribute('data-single-modal-close','true');button.style.cssText='display:block;width:100%;margin-top:16px;padding:10px 14px;border:0;border-radius:8px;cursor:pointer;font-family:Cairo,sans-serif';button.addEventListener('click',()=>{modal.hidden=true});card.appendChild(button)}
+function clean(modal){modal.querySelectorAll('button').forEach(button=>{if(button.getAttribute('data-single-modal-close')==='true')return;const text=(button.textContent||'').replace(/\s+/g,' ').trim();if(text==='×'||text==='✕'||text==='إغلاق النافذة'||text==='غلق النافذة'||text==='إغلاق'||text==='غلق'){button.remove()}});addSingleCloseButton(modal)}
+function apply(){document.querySelectorAll('.modal').forEach(clean)}
+function init(){apply();new MutationObserver(apply).observe(document.body,{childList:true,subtree:true})}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+window.ensureSingleModalClose=apply;
+})();
