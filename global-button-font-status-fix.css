@@ -1,0 +1,21 @@
+/* Global button typography + visit status terminology */
+button,
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+.btn,
+.primary,
+.secondary,
+.ghost,
+.small-btn,
+.link-btn,
+.nav,
+.close,
+.mobile-menu-btn,
+.filter-btn,
+.clear-filters,
+button * { font-family: 'Cairo', sans-serif !important; }
+
+/* Keep all visit status controls consistent with the platform terminology. */
+#visitStatus option[value="مجدولة"] { font-size: 0; }
+#visitStatus option[value="مجدولة"]::after { content: 'مبرمجة'; font-size: initial; }
