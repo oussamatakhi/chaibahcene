@@ -1,4 +1,20 @@
 /* تثبيت رأس الصفحة وأزرار الإضافة ومنع أي تمدد تدريجي للمسافة فوق القائمة */
 .page-head{position:relative;min-height:58px}
-@media(min-width:601px){.page-head{padding-left:170px}.page-head>.primary{position:absolute;left:0;top:0;margin:0;white-space:nowrap;transform:none!important}}
-@media(max-width:600px){#teachers .page-head,#institutions .page-head{display:grid!important;grid-template-columns:minmax(0,1fr)!important;grid-template-rows:auto auto!important;align-items:start!important;justify-content:normal!important;gap:10px!important;width:100%!important;min-width:0!important;min-height:0!important;height:auto!important;margin:0!important;padding:0!important;position:relative!important}#teachers .page-head>div,#institutions .page-head>div{position:static!important;width:100%!important;height:auto!important;min-height:0!important;margin:0!important;padding:0!important;transform:none!important}#teachers .page-head>.primary,#institutions .page-head>.primary{position:static!important;display:block!important;grid-row:2!important;grid-column:1!important;width:100%!important;min-width:0!important;height:42px!important;min-height:42px!important;margin:0!important;padding:8px 12px!important;transform:none!important;white-space:nowrap!important;align-self:start!important}#teachers .page-head+.panel,#institutions .page-head+.panel{margin-top:0!important;position:static!important;clear:both!important;transform:none!important}}
+
+/* نسخة الحاسوب: العنوان والوصف في سطر واحد، والزر ثابت خارج تدفق النص */
+@media(min-width:601px){
+  .page-head{padding-left:170px;min-height:58px;display:flex!important;align-items:flex-start!important}
+  .page-head>div:first-child{min-width:0;flex:1 1 auto}
+  #teachers .page-head p,#institutions .page-head p{white-space:nowrap!important;overflow:visible!important;text-overflow:clip!important;margin:0!important}
+  .page-head>.primary{position:absolute!important;left:0!important;top:0!important;margin:0!important;white-space:nowrap!important;transform:none!important;flex:none!important}
+}
+
+/* نسخة الهاتف: رأس الصفحة والزر والقائمة في تدفق ثابت */
+@media(max-width:600px){
+  #teachers .page-head,#institutions .page-head{display:grid!important;grid-template-columns:minmax(0,1fr)!important;grid-template-rows:auto 42px!important;align-items:start!important;justify-content:normal!important;gap:10px!important;width:100%!important;min-width:0!important;min-height:0!important;height:auto!important;margin:0 0 10px!important;padding:0!important;position:relative!important;transform:none!important;top:auto!important;bottom:auto!important}
+  #teachers .page-head>div:first-child,#institutions .page-head>div:first-child{position:static!important;width:100%!important;height:auto!important;min-height:0!important;margin:0!important;padding:0!important;transform:none!important}
+  #teachers .page-head h2,#institutions .page-head h2{margin:0 0 4px!important;line-height:1.25!important}
+  #teachers .page-head p,#institutions .page-head p{margin:0!important;line-height:1.55!important;white-space:normal!important}
+  #teachers .page-head>.primary,#institutions .page-head>.primary{position:static!important;display:block!important;grid-row:2!important;grid-column:1!important;width:100%!important;min-width:0!important;max-width:100%!important;height:42px!important;min-height:42px!important;max-height:42px!important;margin:0!important;padding:8px 12px!important;transform:none!important;translate:none!important;white-space:nowrap!important;align-self:start!important;box-sizing:border-box!important}
+  #teachers .page-head+.panel,#institutions .page-head+.panel{display:block!important;width:100%!important;max-width:100%!important;min-width:0!important;margin:0!important;position:static!important;clear:none!important;transform:none!important;translate:none!important}
+}
