@@ -1,0 +1,41 @@
+/* تثبيت أزرار إضافة الأستاذ والمؤسسة ومنع تحرك القائمة أسفلها */
+.page-head.page-actions-fixed{position:relative!important;display:flex!important;align-items:center!important;justify-content:space-between!important;min-height:48px!important;margin-bottom:20px!important}
+.page-head.page-actions-fixed>.page-head-info{min-width:0!important;flex:1 1 auto!important}
+.page-head.page-actions-fixed>.page-action-btn{position:static!important;flex:0 0 auto!important;transform:none!important;margin:0!important}
+
+@media(max-width:600px){
+  #teachers .page-head.page-actions-fixed,
+  #institutions .page-head.page-actions-fixed{
+    display:block!important;
+    width:100%!important;
+    min-height:0!important;
+    height:auto!important;
+    margin:0 0 14px!important;
+    padding:0!important;
+  }
+  #teachers .page-head.page-actions-fixed>.page-head-info,
+  #institutions .page-head.page-actions-fixed>.page-head-info{
+    display:block!important;
+    width:100%!important;
+    height:auto!important;
+    min-height:0!important;
+    margin:0 0 10px!important;
+  }
+  #teachers .page-head.page-actions-fixed>.page-action-btn,
+  #institutions .page-head.page-actions-fixed>.page-action-btn{
+    display:block!important;
+    position:static!important;
+    width:100%!important;
+    height:auto!important;
+    min-height:42px!important;
+    margin:0!important;
+    transform:none!important;
+    clear:both!important;
+  }
+  #teachers .page-head.page-actions-fixed + .panel,
+  #institutions .page-head.page-actions-fixed + .panel{
+    margin-top:0!important;
+    position:static!important;
+    clear:both!important;
+  }
+}
