@@ -1,37 +1,4 @@
-/* Stable page header actions: prevents Add buttons from drifting during layout/data reflow. */
-.page-head {
-  position: relative;
-  min-height: 58px;
-}
-
-/* Desktop/tablet: anchor the action button to the left edge of the page header. */
-@media (min-width: 601px) {
-  .page-head {
-    padding-left: 170px;
-  }
-
-  .page-head > .primary {
-    position: absolute;
-    left: 0;
-    top: 0;
-    margin: 0;
-    white-space: nowrap;
-  }
-}
-
-/* Mobile: keep the action in normal flow and make it stable/full width. */
-@media (max-width: 600px) {
-  .page-head {
-    min-height: 0;
-    width: 100%;
-  }
-
-  .page-head > .primary {
-    position: static;
-    display: block;
-    width: 100%;
-    margin: 0;
-    flex: 0 0 auto;
-    transform: none !important;
-  }
-}
+/* تثبيت رأس الصفحة وأزرار الإضافة ومنع أي تمدد تدريجي للمسافة فوق القائمة */
+.page-head{position:relative;min-height:58px}
+@media(min-width:601px){.page-head{padding-left:170px}.page-head>.primary{position:absolute;left:0;top:0;margin:0;white-space:nowrap;transform:none!important}}
+@media(max-width:600px){#teachers .page-head,#institutions .page-head{display:grid!important;grid-template-columns:minmax(0,1fr)!important;grid-template-rows:auto auto!important;align-items:start!important;justify-content:normal!important;gap:10px!important;width:100%!important;min-width:0!important;min-height:0!important;height:auto!important;margin:0!important;padding:0!important;position:relative!important}#teachers .page-head>div,#institutions .page-head>div{position:static!important;width:100%!important;height:auto!important;min-height:0!important;margin:0!important;padding:0!important;transform:none!important}#teachers .page-head>.primary,#institutions .page-head>.primary{position:static!important;display:block!important;grid-row:2!important;grid-column:1!important;width:100%!important;min-width:0!important;height:42px!important;min-height:42px!important;margin:0!important;padding:8px 12px!important;transform:none!important;white-space:nowrap!important;align-self:start!important}#teachers .page-head+.panel,#institutions .page-head+.panel{margin-top:0!important;position:static!important;clear:both!important;transform:none!important}}
