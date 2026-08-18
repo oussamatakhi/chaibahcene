@@ -1,0 +1,4 @@
+/* Prevent the temporary logout label from flashing before account-settings.js initializes. */
+#logoutBtn{font-family:'Cairo',sans-serif!important;}
+#logoutBtn{color:transparent!important;position:relative;}
+#logoutBtn::after{content:'حسابي';color:inherit;position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Cairo',sans-serif!important;}
