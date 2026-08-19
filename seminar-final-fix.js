@@ -18,20 +18,21 @@ function restoreTeacherFields(f){
 }
 function addStyles(){if($('seminarTeacherStyle'))return;const s=document.createElement('style');s.id='seminarTeacherStyle';s.textContent='.seminar-extra-fields,.seminar-choice-options,.seminar-teachers-list,.seminar-teacher-choice{display:none!important}#seminarTeachers{width:100%;min-height:180px;padding:11px 12px;border:1px solid #dbe2ea;border-radius:9px;font-family:Cairo,sans-serif;background:#fff}#seminarTeachers option{padding:7px 6px}.seminar-select-all{margin-top:8px;padding:7px 12px;border:1px solid #dbe2ea;border-radius:8px;background:#fff;cursor:pointer;font-family:Cairo,sans-serif}.seminar-teacher-institution{color:#64748b}';document.head.appendChild(s)}
 async function save(f,select){
- const data=Object.fromEntries(new FormData(f).entries());
+ const fd=new FormData(f);const data=Object.fromEntries(fd.entries());
  const ids=[...select.selectedOptions].map(o=>o.value);
  if(!ids.length){alert('يرجى اختيار أستاذ واحد على الأقل.');return}
  const client=C();if(!client){alert('تعذر الاتصال بقاعدة البيانات.');return}
- const facilitators=String(data.facilitators||$('seminarFacilitators')?.value||'').trim();
+ const facilitators=String(fd.get('facilitators')||$('seminarFacilitators')?.value||'').trim();
  const seminarId=crypto.randomUUID();
  const payload={id:seminarId,title:data.title,seminar_date:data.seminar_date,start_time:data.start_time||null,end_time:data.end_time||null,location:data.location||null,theme:data.theme||null,objectives:data.objectives||null,status:'مبرمجة',facilitators:facilitators||null};
- let r=await client.from('seminars').insert(payload);
+ const r=await client.from('seminars').insert(payload).select('id,facilitators').maybeSingle();
  if(r.error){alert('تعذر تسجيل الندوة: '+r.error.message);return}
- if(facilitators){const u=await client.from('seminars').update({facilitators}).eq('id',seminarId);if(u.error){alert('تم تسجيل الندوة لكن تعذر حفظ المؤطرين: '+u.error.message);return}}
+ if(!r.data?.id){alert('تعذر تأكيد حفظ الندوة.');return}
+ if(String(r.data.facilitators??'')!==facilitators){const u=await client.from('seminars').update({facilitators:facilitators||null}).eq('id',seminarId);if(u.error){alert('تم تسجيل الندوة لكن تعذر حفظ المؤطرين: '+u.error.message);return}}
  const a=await client.from('seminar_attendance').insert(ids.map(id=>({seminar_id:seminarId,teacher_id:id,present:true})));
  if(a.error){alert('تم تسجيل الندوة لكن تعذر ربط الأساتذة: '+a.error.message);return}
- alert('تم تسجيل الندوة بنجاح');f.reset();restoreTeacherFields(f);window.closeModal?.('seminarModal');await window.loadAll?.()
+ alert('تم تسجيل الندوة بنجاح');f.reset();restoreTeacherFields(f);window.closeModal?.('seminarModal');await window.loadAll?.();
 }
-function init(){const f=$('seminarForm');if(!f||f.dataset.sf4)return;f.dataset.sf4='1';addStyles();const select=restoreTeacherFields(f);f.addEventListener('submit',async e=>{e.preventDefault();e.stopImmediatePropagation();const btn=f.querySelector('button[type=submit]');if(btn){btn.disabled=true;btn.textContent='جارٍ الحفظ...'}try{await save(f,select)}finally{if(btn){btn.disabled=false;btn.textContent='حفظ'}}},true)}
+function init(){const f=$('seminarForm');if(!f||f.dataset.sf5)return;f.dataset.sf5='1';addStyles();const select=restoreTeacherFields(f);document.addEventListener('submit',async e=>{if(e.target!==f)return;e.preventDefault();e.stopImmediatePropagation();const btn=f.querySelector('button[type=submit]');if(btn){btn.disabled=true;btn.textContent='جارٍ الحفظ...'}try{await save(f,select)}catch(err){console.error(err);alert('تعذر حفظ الندوة: '+(err?.message||err))}finally{if(btn){btn.disabled=false;btn.textContent='حفظ'}}},true)}
 setTimeout(init,400);window.addEventListener('load',()=>setTimeout(init,900));window.initSeminarTeacherSelection=init;
 })();
