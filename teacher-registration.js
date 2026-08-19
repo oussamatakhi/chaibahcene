@@ -1,6 +1,6 @@
 (() => {
   'use strict';
-  const API = 'https://qaimjtdiyatouqsqfthb.supabase.co/functions/v1/teacher-registration';
+  const API = 'https://qaimjtdiyatouqsqfthb.supabase.co/functions/v1/teacher-registration?v=3';
   const days = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس'];
   const slots = [['08:00','09:00'],['09:00','10:00'],['10:00','11:00'],['11:00','12:00'],['12:00','13:00'],['13:00','14:00'],['14:00','15:00'],['15:00','16:00'],['16:00','17:00']];
   const scheduleEl = document.getElementById('schedule');
@@ -30,15 +30,21 @@
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    status.className=''; status.textContent=''; submitBtn.disabled=true; submitBtn.textContent='جارٍ حفظ البيانات...';
+    status.className=''; status.textContent=''; submitBtn.disabled=true; submitBtn.textContent='جارٍ مطابقة الأستاذ وحفظ البيانات...';
     const fd = new FormData(form);
     const payload = Object.fromEntries(fd.entries());
+    delete payload.employee_number;
     payload.schedule = [...scheduleEl.querySelectorAll('input[data-day]')].filter(i => i.value.trim()).map(i => ({day_of_week:Number(i.dataset.day),start_time:i.dataset.start,end_time:i.dataset.end,section:i.value.trim()}));
     try {
       const r = await fetch(API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
       const data = await r.json();
       if (!r.ok) throw new Error(data.error || 'تعذر حفظ الاستمارة');
-      form.innerHTML = `<div class="result"><div>تم حفظ بيانات الأستاذ وربطها بسجله في قاعدة البيانات بنجاح.</div><strong>رقم الطلب: ${escapeHtml(data.request_number)}</strong><p>${data.matched_existing_teacher ? 'تم العثور على سجل الأستاذ مسبقاً، لذلك لم يتم إنشاء سجل أستاذ جديد. تم استكمال البيانات الناقصة فقط وربط طلب التسجيل بالسجل الموجود.' : 'تم إنشاء سجل الأستاذ لأول مرة وربط طلب التسجيل به.'}</p></div>`;
+      if (data.ambiguous_match) {
+        showError('تعذر تحديد الأستاذ بشكل آمن: توجد أكثر من مطابقة. تم حفظ الطلب للمراجعة ولم يتم إنشاء سجل أستاذ مكرر.');
+        submitBtn.disabled=false; submitBtn.textContent='إرسال الاستمارة';
+        return;
+      }
+      form.innerHTML = `<div class="result"><div>تم حفظ بيانات الأستاذ وربطها بسجله في قاعدة البيانات بنجاح.</div><strong>رقم الطلب: ${escapeHtml(data.request_number)}</strong><p>${data.matched_existing_teacher ? 'تم التعرف على الأستاذ الموجود مسبقاً باستعمال الاسم واللقب والمؤسسة، ولم يتم إنشاء سجل مكرر.' : 'لم يوجد سجل مطابق، لذلك تم إنشاء سجل الأستاذ وربط طلب التسجيل به.'}</p></div>`;
     } catch (err) {
       showError(err.message);
       submitBtn.disabled=false; submitBtn.textContent='إرسال الاستمارة';
