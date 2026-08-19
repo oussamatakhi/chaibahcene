@@ -2,7 +2,7 @@
   'use strict';
   const API = 'https://qaimjtdiyatouqsqfthb.supabase.co/functions/v1/teacher-registration';
   const days = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس'];
-  const slots = [['08:00','09:00'],['09:00','10:00'],['10:00','11:00'],['11:00','12:00'],['12:00','13:00'],['13:00','14:00'],['14:00','15:00'],['15:00','16:00'],['16:00','17:00']];
+  const slots = [['08:00','09:00'],['09:00','10:00'],['10:00','11:00'],['11:00','12:00'],['13:00','14:00'],['14:00','15:00'],['15:00','16:00'],['16:00','17:00']];
   const scheduleEl = document.getElementById('schedule');
   const form = document.getElementById('registrationForm');
   const status = document.getElementById('status');
@@ -27,22 +27,24 @@
 
   function escapeHtml(v) { return String(v ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
   function showError(msg) { status.className = 'err'; status.textContent = msg; }
-  function showOk(msg) { status.className = 'ok'; status.innerHTML = msg; }
 
   form.addEventListener('submit', async (e) => {
-    e.preventDefault(); status.className=''; status.textContent=''; submitBtn.disabled=true; submitBtn.textContent='جارٍ إرسال الاستمارة...';
-    const fd = new FormData(form); const payload = Object.fromEntries(fd.entries());
+    e.preventDefault();
+    status.className=''; status.textContent=''; submitBtn.disabled=true; submitBtn.textContent='جارٍ حفظ البيانات...';
+    const fd = new FormData(form);
+    const payload = Object.fromEntries(fd.entries());
     payload.schedule = [...scheduleEl.querySelectorAll('input[data-day]')].filter(i => i.value.trim()).map(i => ({day_of_week:Number(i.dataset.day),start_time:i.dataset.start,end_time:i.dataset.end,section:i.value.trim()}));
     try {
       const r = await fetch(API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
       const data = await r.json();
-      if (!r.ok) throw new Error(data.error || 'تعذر إرسال الاستمارة');
-      form.innerHTML = `<div class="result"><div>تم تسجيل معلوماتكم بنجاح.</div><strong>رقم الطلب: ${escapeHtml(data.request_number)}</strong><p>${data.matched_existing_teacher ? 'تم التعرف على الأستاذ الموجود مسبقاً في قاعدة البيانات، وستُعتمد بياناته الرسمية ويُستكمل فقط ما هو ناقص بعد المراجعة.' : 'تم إنشاء طلب تسجيل جديد، وهو الآن قيد المراجعة من طرف مفتش المادة.'}</p></div>`;
+      if (!r.ok) throw new Error(data.error || 'تعذر حفظ الاستمارة');
+      form.innerHTML = `<div class="result"><div>تم حفظ بيانات الأستاذ وربطها بسجله في قاعدة البيانات بنجاح.</div><strong>رقم الطلب: ${escapeHtml(data.request_number)}</strong><p>${data.matched_existing_teacher ? 'تم العثور على سجل الأستاذ مسبقاً، لذلك لم يتم إنشاء سجل أستاذ جديد. تم استكمال البيانات الناقصة فقط وربط طلب التسجيل بالسجل الموجود.' : 'تم إنشاء سجل الأستاذ لأول مرة وربط طلب التسجيل به.'}</p></div>`;
     } catch (err) {
       showError(err.message);
       submitBtn.disabled=false; submitBtn.textContent='إرسال الاستمارة';
     }
   });
 
-  buildSchedule(); loadInstitutions();
+  buildSchedule();
+  loadInstitutions();
 })();
