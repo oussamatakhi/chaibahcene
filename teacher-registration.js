@@ -2,7 +2,7 @@
   'use strict';
   const API = 'https://qaimjtdiyatouqsqfthb.supabase.co/functions/v1/teacher-registration';
   const days = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس'];
-  const slots = [['08:00','09:00'],['09:00','10:00'],['10:00','11:00'],['11:00','12:00'],['13:00','14:00'],['14:00','15:00'],['15:00','16:00'],['16:00','17:00']];
+  const slots = [['08:00','09:00'],['09:00','10:00'],['10:00','11:00'],['11:00','12:00'],['12:00','13:00'],['13:00','14:00'],['14:00','15:00'],['15:00','16:00'],['16:00','17:00']];
   const scheduleEl = document.getElementById('schedule');
   const form = document.getElementById('registrationForm');
   const status = document.getElementById('status');
