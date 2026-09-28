@@ -44,7 +44,7 @@ async function deleteDispatch(id){if(!confirm('هل تريد حذف جدول ا�
 async function printDispatch(id){
  const row=(window.__platformData?.dispatches||[]).find(x=>String(x.id)===String(id));
  if(!row)return;
- const c=C(),q=await c.from('dispatch_items').select('document_description,quantity,remarks').eq('dispatch_id',id).order('created_at');
+ const c=C(),q=await c.from('dispatch_items').select('document_description,quantity,remarks').eq('dispatch_id',id);
  if(q.error)return alert('تعذر تحميل تفاصيل جدول الإرسال: '+q.error.message);
  const ep=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
  const d=new Date(row.dispatch_date+'T00:00:00'),today=d.toLocaleDateString('ar-DZ'),year=d.getFullYear();
