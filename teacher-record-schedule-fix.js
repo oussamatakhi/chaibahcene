@@ -6,10 +6,12 @@ const data=()=>window.__platformData||window.cache||{};
 const teacher=id=>(data().teachers||[]).find(x=>String(x.id)===String(id));
 let currentId=null,currentRows=[];
 function ensureModal(){
- let modal=$('teacherScheduleViewModal');
- if(!modal){modal=document.createElement('div');modal.id='teacherScheduleViewModal';modal.className='modal';modal.hidden=true;modal.innerHTML='<div class="modal-card profile-card"><button class="close" type="button" id="closeTeacherSchedule">×</button><div id="teacherScheduleView"></div></div>';document.body.appendChild(modal)}
+ const modal=$('teacherScheduleModal');
+ if(!modal)return null;
  modal.style.zIndex='3000';
- $('closeTeacherSchedule').onclick=()=>{modal.hidden=true;modal.style.display='none'};
+ modal.hidden=false;modal.style.display='none';
+ const close=modal.querySelector('.close');
+ if(close)close.onclick=()=>{modal.hidden=true;modal.style.display='none'};
  return modal;
 }
 function showEditor(){
