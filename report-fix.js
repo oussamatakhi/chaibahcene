@@ -14,7 +14,7 @@
    try{return oldPrint();}finally{window.open=realOpen;}
  };
  const s=document.createElement('script');
- s.src='report-v3.js?v=20260817-3';
+ s.src='report-v3.js?v=20261117-1';
  s.onload=()=>console.log('Ministerial report v3 loaded');
  s.onerror=()=>console.error('تعذر تحميل report-v3.js');
  document.head.appendChild(s);
